@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gen Z Slang Guesser</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121213;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 { margin-bottom: 5px; font-size: 2rem; color: #6aaa64; }
+    p { margin-top: 0; color: #818384; font-size: 0.9rem; }
+    #grid {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      grid-gap: 5px;
+      margin-bottom: 20px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 5px;
+    }
+    .tile {
+      width: 50px;
+      height: 50px;
+      border: 2px solid #3a3a3c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .correct { background-color: #538d4e; border-color: #538d4e; }
+    .present { background-color: #b59f3b; border-color: #b59f3b; }
+    .absent { background-color: #3a3a3c; border-color: #3a3a3c; }
+    .input-container { display: flex; gap: 10px; }
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      text-transform: uppercase;
+      text-align: center;
+      letter-spacing: 2px;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #538d4e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background-color: #6aaa64; }
+    #message { margin-top: 15px; font-weight: bold; min-height: 24px; }
+  </style>
+</head>
+<body>
+
+  <h1>SLANG GEN Z</h1>
+  <p>Tebak kata gaul 5 huruf dalam 6 kali kesempatan!</p>
+
+  <div id="grid"></div>
+
+  <div class="input-container">
+    <input type="text" id="guess-input" maxlength="5" placeholder="Ketik...">
+    <button onclick="submitGuess()">Kirim</button>
+  </div>
+
+  <div id="message"></div>
+
+  <script>
+    // Daftar kata slang Gen Z (5 Huruf)
+    const WORDS = ["SLAYY", "CHILL", "RIZZS", "GALAU", "BESTI", "SIGMA"];
+    const targetWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+    
+    let currentRow = 0;
+    const maxGuesses = 6;
+
+    // Buat Papan Game
+    const grid = document.getElementById("grid");
+    for (let i = 0; i < maxGuesses; i++) {
+      const row = document.createElement("div");
+      row.className = "row";
+      for (let j = 0; j < 5; j++) {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        row.appendChild(tile);
+      }
+      grid.appendChild(row);
+    }
+
+    function submitGuess() {
+      const input = document.getElementById("guess-input");
+      const guess = input.value.toUpperCase();
+      const message = document.getElementById("message");
+
+      if (guess.length !== 5) {
+        message.innerText = "Harus 5 huruf ya!";
+        return;
+      }
+
+      if (currentRow >= maxGuesses) return;
+
+      const rowTiles = grid.children[currentRow].children;
+      
+      // Cek huruf
+      for (let i = 0; i < 5; i++) {
+        rowTiles[i].innerText = guess[i];
+        if (guess[i] === targetWord[i]) {
+          rowTiles[i].classList.add("correct");
+        } else if (targetWord.includes(guess[i])) {
+          rowTiles[i].classList.add("present");
+        } else {
+          rowTiles[i].classList.add("absent");
+        }
+      }
+
+      if (guess === targetWord) {
+        message.innerText = "🎉 Mantap! Kamu berhasil menebaknya!";
+        input.disabled = true;
+        return;
+      }
+
+      currentRow++;
+      input.value = "";
+      message.innerText = "";
+
+      if (currentRow === maxGuesses) {
+        message.innerText = `❌ Game Over! Katanya adalah: ${targetWord}`;
+        input.disabled = true;
+      }
+    }
+  </script>
+</body>
+</html>
